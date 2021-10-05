@@ -1,0 +1,70 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct  1 23:06:07 2021
+
+@author: Vedant
+"""
+#%%
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+path = "C:/Users/Vedant/Desktop/UIUC/SEM 1/Machine Learning/Project/MLF_GP2_EconCycle.csv"
+df = pd.read_csv(path)
+print(df.head())
+n_rows=len(df)
+n_col=0
+for column in df.values[0,:]:
+    n_col=n_col+1
+print("Number of columns of Data = " , n_col , '\n')
+print("The summary for each column is \n",df.describe())
+
+
+cols=['T1Y Index', 'T2Y Index', 'T3Y Index', 'T5Y Index', 'T7Y Index',
+       'T10Y Index', 'CP1M', 'CP3M', 'CP6M', 'CP1M_T1Y', 'CP3M_T1Y',
+       'CP6M_T1Y', 'USPHCI', 'PCT 3MO FWD', 'PCT 6MO FWD', 'PCT 9MO FWD']
+sns.pairplot(df[cols],height=2.5)
+plt.tight_layout()
+plt.show()
+
+
+corr=df[cols].corr()
+sns.set(font_scale=0.6)
+sns.heatmap(corr, annot= True,cmap="Blues")
+plt.show()
+
+#%%
+
+from sklearn.preprocessing import StandardScaler 
+data = df.values
+sc = StandardScaler()
+data=sc.fit_transform(data)
+X=data[:,:12]
+y=data[:,12:]
+
+
+#%%
+from sklearn.decomposition import PCA
+pca=PCA(n_components=None)
+X_pca = pca.fit_transform(X)
+exp_var_pca= pca.explained_variance_ratio_
+cum_sum_eigenvalues = np.cumsum(exp_var_pca)
+sns.set(font_scale=1)
+plt.bar(range(0,len(exp_var_pca)), exp_var_pca, alpha=0.5, align='center', label='Individual explained variance')
+plt.step(range(0,len(cum_sum_eigenvalues)), cum_sum_eigenvalues, where='mid',label='Cumulative explained variance')
+plt.ylabel('Explained variance ratio')
+plt.xlabel('Principal component index')
+plt.title("Cumulative and histogram plot for explained variance ratio")
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+
+
+
+
